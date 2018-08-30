@@ -6,7 +6,7 @@ const { githubToSlack } = require('@atomist/slack-messages/Markdown');
 const parseChangelog = require('./lib/parseChangelog');
 const superagent = require('superagent');
 
-const server = 'https://registry.npmjs.org';
+const server = 'https://skimdb.npmjs.com/registry';
 
 run().catch(error => console.error(error.stack));
 
