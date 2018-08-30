@@ -11,9 +11,9 @@ const server = 'https://skimdb.npmjs.com/registry';
 run().catch(error => console.error(error.stack));
 
 async function run() {
-  const changelog = await getLatestChangelog('mongoose');
+  const { changelog, version, url } = await getLatestChangelog('mongoose');
 
-  await postToSlack('mongoose', '5.2.10', changelog);
+  await postToSlack('mongoose', version, url, changelog);
 }
 
 //deps('mongoose', '5.2.9').catch(error => console.error(error.stack));
@@ -24,12 +24,12 @@ async function getLatestChangelog(pkg) {
   const version = Object.keys(versions).reverse()[0];
 
   const githubUrl = convertToGithubUrl(repository);
-  const changelog = await getChangelog(githubUrl);
+  const { changelog, url } = await getChangelog(githubUrl);
   const parsed = parseChangelog(changelog);
-  return parsed[version];
+  return { changelog: parsed[version], version, url };
 }
 
-async function postToSlack(pkg, version, changelog) {
+async function postToSlack(pkg, version, url, changelog) {
   const webhook = config.slackWebhook;
   const slack = new Slack(webhook, {});
 
@@ -49,7 +49,7 @@ async function postToSlack(pkg, version, changelog) {
   changelog = lines.join('\n');
 
   await slack.send({
-    text: `${pkg} v${version} released. Changelog:\n\n${changelog}`,
+    text: `${pkg} v${version} released. <${url}|Changelog>:\n\n${changelog}`,
     channel: '#test',
     icon: ':mongoose:'
   });
@@ -80,6 +80,8 @@ function convertToGithubUrl(repo) {
 async function getChangelog(url) {
   const allowed = ['History.md', 'HISTORY.md', 'CHANGELOG.md'];
 
+  const originalUrl = url;
+
   url = url.replace('github.com', 'raw.githubusercontent.com');
 
   for (const file of allowed) {
@@ -87,7 +89,7 @@ async function getChangelog(url) {
       then(res => res.text).
       catch(() => null);
     if (md != null) {
-      return md;
+      return { changelog: md, url: `${originalUrl}/blob/master/${file}` };
     }
   }
 
