@@ -1,6 +1,7 @@
 const Slack = require('node-slack');
 const assert = require('assert');
 const config = require('./.config');
+const convertToGithubUrl = require('./lib/helpers/convertToGithubUrl');
 const findUpdates = require('./lib/findUpdates');
 const { githubToSlack } = require('@atomist/slack-messages/Markdown');
 const http = require('http');
@@ -12,9 +13,10 @@ const server = 'registry.npmjs.org';
 run().catch(error => console.error(error.stack));
 
 async function run() {
-  const { changelog, version, url } = await getLatestChangelog('mongoose');
+  const pkg = 'run-rs';
+  const { changelog, version, url } = await getLatestChangelog(pkg);
 
-  await postToSlack('mongoose', version, url, changelog);
+  await postToSlack(pkg, version, url, changelog);
 }
 
 //deps('mongoose', '5.2.9').catch(error => console.error(error.stack));
@@ -92,15 +94,6 @@ async function deps(pkg, version) {
 
   const parsed = parseChangelog(changelog);
   console.log(parsed[version]);
-}
-
-function convertToGithubUrl(repo) {
-  assert.equal(repo.type, 'git');
-  assert.ok(repo.url.includes('github.com'));
-
-  return 'https://github.com/' + repo.url.
-    replace(/.*github\.com\//i, '').
-    replace(/\.git$/i, '');
 }
 
 async function getChangelog(url) {
