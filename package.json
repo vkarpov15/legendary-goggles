@@ -5,6 +5,7 @@
     "marked": "0.5.0",
     "mongoose": "5.2.9",
     "node-slack": "0.0.7",
-    "superagent": "3.8.3"
+    "superagent": "3.6.2",
+    "tao-js": "0.2.0"
   }
 }
