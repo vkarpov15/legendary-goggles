@@ -1,10 +1,13 @@
 {
   "dependencies": {
     "@atomist/slack-messages": "0.12.1",
+    "chalk": "2.4.1",
     "cheerio": "1.0.0-rc.2",
     "marked": "0.5.0",
+    "moment": "2.22.2",
     "mongoose": "5.2.11",
     "node-slack": "0.0.7",
+    "semver": "5.5.1",
     "superagent": "3.6.2",
     "tao-js": "0.2.0"
   },
@@ -36,6 +39,7 @@
           "VariableDeclarator": 2
         }
       ],
+      "no-constant-condition": "off",
       "keyword-spacing": "error",
       "no-buffer-constructor": "error",
       "no-console": "off",
