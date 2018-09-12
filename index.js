@@ -4,6 +4,7 @@ const convertToGithubUrl = require('./lib/helpers/convertToGithubUrl');
 const dbConnect = require('./lib/mongoose');
 const findUpdates = require('./lib/findUpdates');
 const getChangelog = require('./lib/getChangelog');
+const handleLicense = require('./lib/helpers/handleLicense');
 const http = require('http');
 const moment = require('moment');
 const parseChangelog = require('./lib/parseChangelog');
@@ -29,12 +30,13 @@ async function run() {
     const { updated, lastSequenceNumber } =
       await findUpdates(state.lastSequenceNumber);
 
-    for (const name of updated) {
-      console.log(ts(), `Updated package "${name}"`);
-      const npmData = await superagent.get(`https://${server}/${name}`).
+    for (const item of updated) {
+      const { seq, id } = item;
+      console.log(ts(), `Updated package "${id}"`);
+      const npmData = await superagent.get(`https://${server}/${id}`).
         then(res => res.body);
 
-      npmData['distTags'] = npmData['dist-tags'];
+      npmData['distTags'] = npmData['dist-tags'] || {};
       for (const key of Object.keys(npmData['distTags'])) {
         let sanitized = key;
         if (key.includes('.')) {
@@ -48,24 +50,39 @@ async function run() {
           delete npmData['distTags'][key];
         }
       }
-      const versionDetail = npmData['versions'];
+      const versionDetail = npmData['versions'] || {};
       npmData['versions'] = Object.keys(versionDetail);
       delete npmData.readme;
+      npmData['license'] = handleLicense(npmData['license']);
 
       console.log(ts(), npmData);
 
-      let pkg = await Package.findOne({ _id: name });
+      let pkg = await Package.findOne({ _id: id });
 
       if (pkg == null) {
         pkg = new Package(npmData);
         await pkg.save();
       }
 
-      const { changelog, version, url, githubUrl } = await getLatestChangelog(name);
+      state.lastSequenceNumber = seq;
+      await state.save();
+
+      const { changelog, version, url, githubUrl } = await getLatestChangelog(id);
+
+      if (version == null) {
+        continue;
+      }
 
       console.log(ts(), changelog);
 
-      await postToSlack(name, version, url, changelog, githubUrl);
+      if (!config.packages.includes(id)) {
+        console.log(ts(), `Skip posting ${id}`);
+        continue;
+      }
+
+      await postToSlack(id, version, url, changelog, githubUrl);
+
+      await new Promise(resolve => setTimeout(resolve, 1000));
     }
 
     state.lastSequenceNumber = lastSequenceNumber;
@@ -109,7 +126,11 @@ async function getLatestChangelog(pkg) {
   });
 
   const { versions, repository } = res;
-  const version = Object.keys(versions).reverse()[0];
+  const version = Object.keys(versions || {}).reverse()[0];
+
+  if (version == null) {
+    return { changelog: null, version: null, url: null, githubUrl: null };
+  }
 
   let githubUrl;
   try {
