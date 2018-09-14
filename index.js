@@ -5,7 +5,6 @@ const dbConnect = require('./lib/mongoose');
 const findUpdates = require('./lib/findUpdates');
 const getChangelog = require('./lib/getChangelog');
 const handleLicense = require('./lib/helpers/handleLicense');
-const http = require('http');
 const moment = require('moment');
 const parseChangelog = require('./lib/parseChangelog');
 const postToSlack = require('./lib/postToSlack');
@@ -20,7 +19,7 @@ async function run() {
 
   const Package = db.model('Package');
   const State = db.model('State');
-  // const Version = db.model('Version');
+  const Version = db.model('Version');
 
   const opts = { new: true, upsert: true, setDefaultsOnInsert: true };
   const state = await State.findOneAndUpdate({}, {}, opts);
@@ -60,25 +59,47 @@ async function run() {
       if (pkg == null) {
         pkg = new Package(npmData);
         await pkg.save();
+      } else {
+        pkg.set(npmData);
+        await pkg.save();
+      }
+
+      const { changelog, url, githubUrl } = await getParsedChangelog(pkg);
+
+      for (const version of npmData['versions']) {
+        let doc = await Version.findOne({ packageId: pkg._id, version });
+
+        const data = versionDetail[version];
+
+        if (doc == null) {
+          console.log(ts(), `Save ${pkg._id}@${version}`);
+          const _changelog = changelog == null ? null : changelog[version];
+          console.log(ts(), Object.keys(changelog || {}));
+          if (_changelog != null) {
+            console.log(ts(), _changelog);
+          }
+          doc = await Version.create({
+            packageId: pkg._id,
+            version,
+            dependencies: toKeyValueArray(data.dependencies),
+            license: handleLicense(data.license),
+            publishedAt: npmData.time[version],
+            changelog: _changelog
+          });
+
+          if (version === npmData['versions'][npmData['versions'].length - 1]) {
+            if (!config.packages.includes(id)) {
+              console.log(ts(), `Skip posting ${id}`);
+              continue;
+            }
+
+            await postToSlack(id, version, url, changelog[version], githubUrl);
+          }
+        }
       }
 
       state.lastSequenceNumber = seq;
       await state.save();
-
-      const { changelog, version, url, githubUrl } = await getLatestChangelog(id);
-
-      if (version == null) {
-        continue;
-      }
-
-      console.log(ts(), changelog);
-
-      if (!config.packages.includes(id)) {
-        console.log(ts(), `Skip posting ${id}`);
-        continue;
-      }
-
-      await postToSlack(id, version, url, changelog, githubUrl);
 
       await new Promise(resolve => setTimeout(resolve, 2000));
     }
@@ -97,52 +118,30 @@ function ts() {
   return chalk.blue(moment().format('YYYYMMDD HH:mm:ss'));
 }
 
-async function getLatestChangelog(pkg) {
-  // Use native HTTP because superagent struggles with application/octet-stream,
-  // which is what npm gives you for very large packages.
-  // See https://github.com/visionmedia/superagent/issues/402
-  const res = await new Promise((resolve, reject) => {
-    const opts = {
-      method: 'GET',
-      hostname: server,
-      path: `/${pkg}`
-    };
-    let str = '';
-    const request = http.request(opts, res => {
-      res.setEncoding('utf8');
-      res.on('data', chunk => {
-        str += chunk.toString('utf8');
-      });
-      res.on('end', () => {
-        resolve(JSON.parse(str));
-      });
-      res.on('error', err => reject(err));
-    });
-
-    request.on('error', error => reject(error));
-    request.end();
-  });
-
-  const { versions, repository } = res;
-  const version = Object.keys(versions || {}).reverse()[0];
-
-  if (version == null) {
-    return { changelog: null, version: null, url: null, githubUrl: null };
+function toKeyValueArray(obj) {
+  if (obj == null) {
+    return [];
   }
+  return Object.keys(obj).
+    reduce((cur, key) => cur.concat([[key, obj[key]]]), []);
+}
+
+async function getParsedChangelog(pkg) {
+  const { repository } = pkg;
 
   let githubUrl;
   try {
     githubUrl = convertToGithubUrl(repository);
   } catch (error) {
-    return { changelog: null, version, url: null, githubUrl: null };
+    return { changelog: null, url: null, githubUrl: null };
   }
   const changelogInfo = await getChangelog(githubUrl);
 
   if (changelogInfo == null) {
-    return { changelog: null, version, url: null, githubUrl };
+    return { changelog: null, url: null, githubUrl };
   }
 
   const { changelog, url } = changelogInfo;
   const parsed = parseChangelog(changelog);
-  return { changelog: parsed[version], version, url, githubUrl };
+  return { changelog: parsed, url, githubUrl };
 }
