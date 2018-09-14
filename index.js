@@ -33,7 +33,18 @@ async function run() {
       const { seq, id } = item;
       console.log(ts(), `Updated package "${id}"`);
       const npmData = await superagent.get(`https://${server}/${id}`).
-        then(res => res.body);
+        then(res => res.body).
+        catch(error => {
+          if (error.status === 404) {
+            return null;
+          }
+          throw error;
+        });
+
+      // Package not found, skip it
+      if (npmData == null) {
+        continue;
+      }
 
       npmData['distTags'] = npmData['dist-tags'] || {};
       for (const key of Object.keys(npmData['distTags'])) {
@@ -74,7 +85,6 @@ async function run() {
         if (doc == null) {
           console.log(ts(), `Save ${pkg._id}@${version}`);
           const _changelog = changelog == null ? null : changelog[version];
-          console.log(ts(), Object.keys(changelog || {}));
           if (_changelog != null) {
             console.log(ts(), _changelog);
           }
