@@ -55,8 +55,6 @@ async function run() {
       delete npmData.readme;
       npmData['license'] = handleLicense(npmData['license']);
 
-      console.log(ts(), npmData);
-
       let pkg = await Package.findOne({ _id: id });
 
       if (pkg == null) {
@@ -82,7 +80,7 @@ async function run() {
 
       await postToSlack(id, version, url, changelog, githubUrl);
 
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 2000));
     }
 
     state.lastSequenceNumber = lastSequenceNumber;
