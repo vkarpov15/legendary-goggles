@@ -111,16 +111,16 @@ async function run() {
       state.lastSequenceNumber = seq;
       await state.save();
 
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise(resolve => setTimeout(resolve, 2 * 1000));
     }
 
     state.lastSequenceNumber = lastSequenceNumber;
     await state.save();
 
-    console.log(ts(), 'Done with this loop, waiting 5 mins');
+    console.log(ts(), 'Done with this loop, waiting 2 mins');
 
     // Wait 5 minutes
-    await new Promise(resolve => setTimeout(resolve, 5 * 60 * 1000));
+    await new Promise(resolve => setTimeout(resolve, 2 * 60 * 1000));
   }
 }
 
