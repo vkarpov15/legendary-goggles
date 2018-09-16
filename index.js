@@ -1,12 +1,10 @@
 const chalk = require('chalk');
 const config = require('./.config');
-const convertToGithubUrl = require('./lib/helpers/convertToGithubUrl');
 const dbConnect = require('./lib/mongoose');
 const findUpdates = require('./lib/findUpdates');
-const getChangelog = require('./lib/getChangelog');
+const getParsedChangelog = require('./lib/getParsedChangelog');
 const handleLicense = require('./lib/helpers/handleLicense');
 const moment = require('moment');
-const parseChangelog = require('./lib/parseChangelog');
 const postToSlack = require('./lib/postToSlack');
 const superagent = require('superagent');
 
@@ -77,6 +75,9 @@ async function run() {
 
       const { changelog, url, githubUrl } = await getParsedChangelog(pkg);
 
+      pkg.changelogUrl = url;
+      await pkg.save();
+
       for (const version of npmData['versions']) {
         let doc = await Version.findOne({ packageId: pkg._id, version });
 
@@ -134,24 +135,4 @@ function toKeyValueArray(obj) {
   }
   return Object.keys(obj).
     reduce((cur, key) => cur.concat([[key, obj[key]]]), []);
-}
-
-async function getParsedChangelog(pkg) {
-  const { repository } = pkg;
-
-  let githubUrl;
-  try {
-    githubUrl = convertToGithubUrl(repository);
-  } catch (error) {
-    return { changelog: null, url: null, githubUrl: null };
-  }
-  const changelogInfo = await getChangelog(githubUrl);
-
-  if (changelogInfo == null) {
-    return { changelog: null, url: null, githubUrl };
-  }
-
-  const { changelog, url } = changelogInfo;
-  const parsed = parseChangelog(changelog);
-  return { changelog: parsed, url, githubUrl };
 }
