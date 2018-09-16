@@ -26,17 +26,14 @@ async function run() {
 
       const { pkg, newVersions } = await updatePackage(db)(id);
 
-      if (!config.packages.includes(id)) {
-        console.log(ts(), `Skip posting ${id}`);
-        continue;
-      }
-
-      for (const version of newVersions) {
-        await postToSlack(id, version.version, pkg.changelogUrl, version.changelog);
-      }
-
       state.lastSequenceNumber = seq;
       await state.save();
+
+      if (config.packages.includes(id)) {
+        for (const version of newVersions) {
+          await postToSlack(id, version.version, pkg.changelogUrl, version.changelog);
+        }
+      }
 
       await new Promise(resolve => setTimeout(resolve, 2 * 1000));
     }
