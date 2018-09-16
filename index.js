@@ -1,23 +1,16 @@
-const chalk = require('chalk');
 const config = require('./.config');
 const dbConnect = require('./lib/mongoose');
 const findUpdates = require('./lib/findUpdates');
-const getParsedChangelog = require('./lib/getParsedChangelog');
-const handleLicense = require('./lib/helpers/handleLicense');
-const moment = require('moment');
 const postToSlack = require('./lib/postToSlack');
-const superagent = require('superagent');
-
-const server = 'registry.npmjs.org';
+const ts = require('./lib/util/ts');
+const updatePackage = require('./lib/updatePackage');
 
 run().catch(error => console.error(error.stack));
 
 async function run() {
   const db = await dbConnect(config.mongodb);
 
-  const Package = db.model('Package');
   const State = db.model('State');
-  const Version = db.model('Version');
 
   const opts = { new: true, upsert: true, setDefaultsOnInsert: true };
   const state = await State.findOneAndUpdate({}, {}, opts);
@@ -29,84 +22,17 @@ async function run() {
 
     for (const item of updated) {
       const { seq, id } = item;
-      console.log(ts(), `Updated package "${id}"`);
-      const npmData = await superagent.get(`https://${server}/${id}`).
-        then(res => res.body).
-        catch(error => {
-          if (error.status === 404) {
-            return null;
-          }
-          throw error;
-        });
+      console.log(ts(), `Update package "${id}"`);
 
-      // Package not found, skip it
-      if (npmData == null) {
+      const { pkg, newVersions } = await updatePackage(db)(id);
+
+      if (!config.packages.includes(id)) {
+        console.log(ts(), `Skip posting ${id}`);
         continue;
       }
 
-      npmData['distTags'] = npmData['dist-tags'] || {};
-      for (const key of Object.keys(npmData['distTags'])) {
-        let sanitized = key;
-        if (key.includes('.')) {
-          sanitized = key.replace(/\./g, '-');
-        }
-        if (key.startsWith('$')) {
-          sanitized = key.substr(1);
-        }
-        if (key !== sanitized) {
-          npmData['distTags'][sanitized] = npmData['distTags'][key];
-          delete npmData['distTags'][key];
-        }
-      }
-      const versionDetail = npmData['versions'] || {};
-      npmData['versions'] = Object.keys(versionDetail);
-      delete npmData.readme;
-      npmData['license'] = handleLicense(npmData['license']);
-
-      let pkg = await Package.findOne({ _id: id });
-
-      if (pkg == null) {
-        pkg = new Package(npmData);
-        await pkg.save();
-      } else {
-        pkg.set(npmData);
-        await pkg.save();
-      }
-
-      const { changelog, url, githubUrl } = await getParsedChangelog(pkg);
-
-      pkg.changelogUrl = url;
-      await pkg.save();
-
-      for (const version of npmData['versions']) {
-        let doc = await Version.findOne({ packageId: pkg._id, version });
-
-        const data = versionDetail[version];
-
-        if (doc == null) {
-          console.log(ts(), `Save ${pkg._id}@${version}`);
-          const _changelog = changelog == null ? null : changelog[version];
-          if (_changelog != null) {
-            console.log(ts(), _changelog);
-          }
-          doc = await Version.create({
-            packageId: pkg._id,
-            version,
-            dependencies: toKeyValueArray(data.dependencies),
-            license: handleLicense(data.license),
-            publishedAt: npmData.time[version],
-            changelog: _changelog
-          });
-
-          if (version === npmData['versions'][npmData['versions'].length - 1]) {
-            if (!config.packages.includes(id)) {
-              console.log(ts(), `Skip posting ${id}`);
-              continue;
-            }
-
-            await postToSlack(id, version, url, changelog[version], githubUrl);
-          }
-        }
+      for (const version of newVersions) {
+        await postToSlack(id, version.version, pkg.changelogUrl, version.changelog);
       }
 
       state.lastSequenceNumber = seq;
@@ -123,16 +49,4 @@ async function run() {
     // Wait 5 minutes
     await new Promise(resolve => setTimeout(resolve, 2 * 60 * 1000));
   }
-}
-
-function ts() {
-  return chalk.blue(moment().format('YYYYMMDD HH:mm:ss'));
-}
-
-function toKeyValueArray(obj) {
-  if (obj == null) {
-    return [];
-  }
-  return Object.keys(obj).
-    reduce((cur, key) => cur.concat([[key, obj[key]]]), []);
 }
