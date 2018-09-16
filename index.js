@@ -10,6 +10,7 @@ run().catch(error => console.error(error.stack));
 async function run() {
   const db = await dbConnect(config.mongodb);
 
+  const Account = db.model('Account');
   const State = db.model('State');
 
   const opts = { new: true, upsert: true, setDefaultsOnInsert: true };
@@ -29,9 +30,13 @@ async function run() {
       state.lastSequenceNumber = seq;
       await state.save();
 
-      if (config.packages.includes(id)) {
-        for (const version of newVersions) {
-          await postToSlack(id, version.version, pkg.changelogUrl, version.changelog);
+      const accounts = await Account.find({ packagesWatched: id });
+      for (const account of accounts) {
+        for (const hook of account.slackWebhooks) {
+          for (const version of newVersions) {
+            await postToSlack(hook, id, version.version, pkg.changelogUrl,
+              version.changelog);
+          }
         }
       }
 
