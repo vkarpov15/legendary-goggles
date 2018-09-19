@@ -1,6 +1,7 @@
 const config = require('./.config');
 const dbConnect = require('./lib/mongoose');
 const findUpdates = require('./lib/findUpdates');
+const get = require('./lib/util/get');
 const postToSlack = require('./lib/postToSlack');
 const ts = require('./lib/util/ts');
 const updatePackage = require('./lib/updatePackage');
@@ -18,6 +19,7 @@ async function run() {
 
   while (true) {
     console.log(ts(), `Start loop at ${state.lastSequenceNumber}`);
+    const start = Date.now();
     const { updated, lastSequenceNumber } =
       await findUpdates(state.lastSequenceNumber);
 
@@ -43,12 +45,15 @@ async function run() {
       await new Promise(resolve => setTimeout(resolve, 100));
     }
 
-    state.lastSequenceNumber = lastSequenceNumber;
-    await state.save();
+    console.log(ts(), `Done with this loop, elapsed ${Date.now() - start}. ` +
+      'Waiting 10 seconds');
 
-    console.log(ts(), 'Done with this loop, waiting 1 min');
+    const lastSeqNumUrl = 'https://replicate.npmjs.com/registry/_changes?' +
+      'descending=true&limit=1';
+    const { latestReleaseSeq: last_seq } = await get(lastSeqNumUrl);
 
-    // Wait a minute
-    await new Promise(resolve => setTimeout(resolve, 1 * 60 * 1000));
+    console.log(ts(), `We're behind by ${latestReleaseSeq - global.lastSequenceNumber} releases`);
+
+    await new Promise(resolve => setTimeout(resolve, 10 * 1000));
   }
 }
