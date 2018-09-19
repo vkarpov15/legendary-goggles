@@ -40,7 +40,7 @@ async function run() {
         }
       }
 
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 100));
     }
 
     state.lastSequenceNumber = lastSequenceNumber;
