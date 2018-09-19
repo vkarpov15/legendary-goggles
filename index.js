@@ -40,15 +40,15 @@ async function run() {
         }
       }
 
-      await new Promise(resolve => setTimeout(resolve, 2 * 1000));
+      await new Promise(resolve => setTimeout(resolve, 1000));
     }
 
     state.lastSequenceNumber = lastSequenceNumber;
     await state.save();
 
-    console.log(ts(), 'Done with this loop, waiting 2 mins');
+    console.log(ts(), 'Done with this loop, waiting 1 min');
 
-    // Wait 5 minutes
-    await new Promise(resolve => setTimeout(resolve, 2 * 60 * 1000));
+    // Wait a minute
+    await new Promise(resolve => setTimeout(resolve, 1 * 60 * 1000));
   }
 }
