@@ -20,7 +20,7 @@ async function run() {
   while (true) {
     console.log(ts(), `Start loop at ${state.lastSequenceNumber}`);
     const start = Date.now();
-    const { updated, lastSequenceNumber } =
+    const { updated } =
       await findUpdates(state.lastSequenceNumber);
 
     for (const item of updated) {
@@ -42,18 +42,18 @@ async function run() {
         }
       }
 
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, 1000));
     }
 
-    console.log(ts(), `Done with this loop, elapsed ${Date.now() - start}. ` +
-      'Waiting 10 seconds');
+    console.log(ts(), `Done with this loop, elapsed ${Date.now() - start}ms.`);
 
     const lastSeqNumUrl = 'https://replicate.npmjs.com/registry/_changes?' +
       'descending=true&limit=1';
-    const { latestReleaseSeq: last_seq } = await get(lastSeqNumUrl);
+    const { last_seq: latestReleaseSeq } = await get(lastSeqNumUrl);
 
-    console.log(ts(), `We're behind by ${latestReleaseSeq - global.lastSequenceNumber} releases`);
+    console.log(ts(), `We're behind by ${latestReleaseSeq - state.lastSequenceNumber}` +
+      ` (${latestReleaseSeq}) releases`);
 
-    await new Promise(resolve => setTimeout(resolve, 10 * 1000));
+    await new Promise(resolve => setTimeout(resolve, 1000));
   }
 }
