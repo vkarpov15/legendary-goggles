@@ -33,7 +33,9 @@ async function run() {
       state.lastSequenceNumber = seq;
       await state.save();
 
-      await postToSlack(pkg, newVersions);
+      if (pkg != null) {
+        await postToSlack(pkg, newVersions);
+      }
 
       await new Promise(resolve => setTimeout(resolve, 2000));
     }
