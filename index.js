@@ -42,7 +42,7 @@ async function run() {
         }
       }
 
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 2000));
     }
 
     console.log(ts(), `Done with this loop, elapsed ${Date.now() - start}ms.`);
@@ -54,6 +54,10 @@ async function run() {
     console.log(ts(), `We're behind by ${latestReleaseSeq - state.lastSequenceNumber}` +
       ` (${latestReleaseSeq}) releases`);
 
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    if (latestReleaseSeq - state.lastSequenceNumber > 100) {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    } else {
+      await new Promise(resolve => setTimeout(resolve, 30000));
+    }
   }
 }
