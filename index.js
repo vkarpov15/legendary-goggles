@@ -1,15 +1,17 @@
 const config = require('./.config');
-const dbConnect = require('./lib/mongoose');
-const findUpdates = require('./lib/findUpdates');
 const get = require('./lib/util/get');
-const postToSlack = require('./lib/postToSlack');
+const lib = require('./lib');
 const ts = require('./lib/util/ts');
-const updatePackage = require('./lib/updatePackage');
 
 run().catch(error => console.error(error.stack));
 
 async function run() {
-  const db = await dbConnect(config.mongodb);
+  const {
+    db,
+    findUpdates,
+    postToSlack,
+    updatePackage
+  } = await lib(config.mongodb);
 
   const Account = db.model('Account');
   const State = db.model('State');
@@ -27,7 +29,7 @@ async function run() {
       const { seq, id } = item;
       console.log(ts(), `Update package "${id}"`);
 
-      const { pkg, newVersions } = await updatePackage(db)(id);
+      const { pkg, newVersions } = await updatePackage(id);
 
       state.lastSequenceNumber = seq;
       await state.save();
