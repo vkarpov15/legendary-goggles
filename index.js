@@ -13,7 +13,6 @@ async function run() {
     updatePackage
   } = await lib(config.mongodb);
 
-  const Account = db.model('Account');
   const State = db.model('State');
 
   const opts = { new: true, upsert: true, setDefaultsOnInsert: true };
@@ -34,15 +33,7 @@ async function run() {
       state.lastSequenceNumber = seq;
       await state.save();
 
-      const accounts = await Account.find({ packagesWatched: id });
-      for (const account of accounts) {
-        for (const hook of account.slackWebhooks) {
-          for (const version of newVersions) {
-            await postToSlack(hook, id, version.version, pkg.changelogUrl,
-              version.changelog);
-          }
-        }
-      }
+      await postToSlack(pkg, newVersions);
 
       await new Promise(resolve => setTimeout(resolve, 2000));
     }
