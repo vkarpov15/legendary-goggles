@@ -13,9 +13,11 @@
   },
   "devDependencies": {
     "eslint": "5.3.0",
-    "mocha": "5.2.0"
+    "mocha": "5.2.0",
+    "pkg": "4.3.4"
   },
   "scripts": {
+    "compile": "pkg ./index.js --output ./bin/jsreport-ingest",
     "lint": "eslint .",
     "test": "mocha ./test/*.test.js"
   },
