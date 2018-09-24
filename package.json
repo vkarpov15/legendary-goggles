@@ -1,8 +1,10 @@
 {
   "dependencies": {
     "@atomist/slack-messages": "0.12.1",
+    "@awaitjs/express": "0.1.4",
     "chalk": "2.4.1",
     "cheerio": "1.0.0-rc.2",
+    "express": "4.16.3",
     "marked": "0.5.0",
     "moment": "2.22.2",
     "mongoose": "5.2.11",

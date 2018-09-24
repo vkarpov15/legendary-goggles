@@ -11,7 +11,7 @@ async function run() {
     findUpdates,
     postToSlack,
     updatePackage
-  } = await lib(config.mongodb);
+  } = await lib(config);
 
   const State = db.model('State');
 
