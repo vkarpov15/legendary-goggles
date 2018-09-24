@@ -4,6 +4,7 @@
     "@awaitjs/express": "0.1.4",
     "chalk": "2.4.1",
     "cheerio": "1.0.0-rc.2",
+    "cors": "2.8.4",
     "express": "4.16.3",
     "marked": "0.5.0",
     "moment": "2.22.2",
@@ -19,7 +20,7 @@
     "pkg": "4.3.4"
   },
   "scripts": {
-    "compile": "pkg ./index.js --output ./bin/jsreport-ingest",
+    "compile": "pkg ./index.js --output ./bin/jsreport-ingest && pkg ./api.js --output ./bin/jsreport-api",
     "lint": "eslint .",
     "test": "mocha ./test/*.test.js"
   },

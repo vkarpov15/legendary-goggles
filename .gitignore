@@ -62,5 +62,6 @@ typings/
 
 .config.js
 ssh
+ssh-*
 
 bin/
