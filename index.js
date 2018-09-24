@@ -49,11 +49,11 @@ async function run() {
     const { last_seq: latestReleaseSeq } = await get(lastSeqNumUrl);
 
     if (latestReleaseSeq - state.lastSequenceNumber > 100) {
-      loopDelay = 2000;
+      loopDelay = 5000;
     } else if (updated.length === 0) {
-      loopDelay += 10000;
+      loopDelay += 20000;
     } else {
-      loopDelay = 10000;
+      loopDelay = 20000;
     }
 
     console.log(ts(), `We're behind by ${latestReleaseSeq - state.lastSequenceNumber}` +
