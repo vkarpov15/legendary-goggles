@@ -8,7 +8,7 @@
     "express": "4.16.3",
     "marked": "0.5.0",
     "moment": "2.22.2",
-    "mongoose": "5.2.11",
+    "mongoose": "5.2.17",
     "node-slack": "0.0.7",
     "semver": "5.5.1",
     "superagent": "3.6.2",
@@ -17,10 +17,13 @@
   "devDependencies": {
     "eslint": "5.3.0",
     "mocha": "5.2.0",
-    "pkg": "4.3.4"
+    "pkg": "4.3.4",
+    "webpack": "4.19.1",
+    "webpack-cli": "3.1.1"
   },
   "scripts": {
-    "compile": "pkg ./index.js --output ./bin/jsreport-ingest && pkg ./api.js --output ./bin/jsreport-api",
+    "compile": "pkg ./index.js --output ./bin/jsreport-ingest",
+    "lambda": "webpack && zip -r ./bin/lambda-latest-versions.zip ./bin/lambda-latest-versions.js",
     "lint": "eslint .",
     "test": "mocha ./test/*.test.js"
   },
