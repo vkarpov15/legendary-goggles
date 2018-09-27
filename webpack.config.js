@@ -1,9 +1,12 @@
 module.exports = {
-  entry: ['./lib/lambda/latestVersions.js'],
+  entry: {
+    latestVersions: './lib/lambda/latestVersions.js',
+    version: './lib/lambda/version.js'
+  },
   target: 'node',
   output: {
     path: `${process.cwd()}/bin`,
-    filename: 'lambda-latest-versions.js',
+    filename: '[name].js',
     libraryTarget: 'umd'
   }
 };

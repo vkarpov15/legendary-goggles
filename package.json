@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "archetype": "0.8.3",
     "@atomist/slack-messages": "0.12.1",
     "@awaitjs/express": "0.1.4",
     "chalk": "2.4.1",
@@ -23,7 +24,7 @@
   },
   "scripts": {
     "compile": "pkg ./index.js --output ./bin/jsreport-ingest",
-    "lambda": "webpack && zip -r ./bin/lambda-latest-versions.zip ./bin/lambda-latest-versions.js",
+    "lambda": "webpack && zip -r ./bin/latestVersions.zip ./bin/latestVersions.js && zip -r ./bin/version.zip ./bin/version.js",
     "lint": "eslint .",
     "test": "mocha ./test/*.test.js"
   },
