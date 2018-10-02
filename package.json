@@ -1,4 +1,6 @@
 {
+  "name": "ingest",
+  "version": "0.1.0",
   "dependencies": {
     "archetype": "0.8.3",
     "@atomist/slack-messages": "0.12.1",
@@ -28,7 +30,7 @@
     "compile": "pkg ./index.js --output ./bin/jsreport-ingest",
     "lambda": "webpack && zip -r ./bin/latestVersions.zip ./bin/latestVersions.js && zip -r ./bin/version.zip ./bin/version.js",
     "lint": "eslint .",
-    "test": "mocha ./test/*.test.js"
+    "test": "env NODE_ENV=test mocha ./test/*.test.js ./test/**/*.test.js"
   },
   "eslintConfig": {
     "extends": [

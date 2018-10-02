@@ -26,7 +26,7 @@ describe('updatePackage', function() {
   it('works', async function() {
     const pkgData = require('./data/pkg');
     const stub = sinon.stub(http, 'get');
-    stub.onFirstCall().returns(pkgData);
+    stub.onFirstCall().resolves(pkgData);
     stub.returns(null);
 
     const { pkg, newVersions } = await lib.updatePackage('print-pkg-version');
