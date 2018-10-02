@@ -28,7 +28,7 @@
   },
   "scripts": {
     "compile": "pkg ./index.js --output ./bin/jsreport-ingest",
-    "lambda": "webpack && zip -r ./bin/latestVersions.zip ./bin/latestVersions.js && zip -r ./bin/version.zip ./bin/version.js",
+    "lambda": "webpack && node ./zip",
     "lint": "eslint .",
     "test": "env NODE_ENV=test mocha ./test/*.test.js ./test/**/*.test.js"
   },
