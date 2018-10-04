@@ -1,5 +1,5 @@
 const config = require('./.config');
-const get = require('./lib/util/get');
+const { get } = require('./lib/util/get');
 const lib = require('./lib');
 const ts = require('./lib/util/ts');
 
@@ -46,7 +46,7 @@ async function run() {
 
     const lastSeqNumUrl = 'https://replicate.npmjs.com/registry/_changes?' +
       'descending=true&limit=1';
-    const { last_seq: latestReleaseSeq } = await get(lastSeqNumUrl);
+    const latestReleaseSeq = await get(lastSeqNumUrl).then(res => res['last_seq']);
 
     if (latestReleaseSeq - state.lastSequenceNumber > 100) {
       loopDelay = 5000;
