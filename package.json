@@ -27,6 +27,7 @@
     "webpack-cli": "3.1.1"
   },
   "scripts": {
+    "compile-api": "pkg ./api.js --output ./bin/jsreport-api",
     "compile": "pkg ./index.js --output ./bin/jsreport-ingest",
     "lambda": "webpack && node ./zip",
     "lint": "eslint .",
