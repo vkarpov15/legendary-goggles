@@ -5,6 +5,7 @@
     "archetype": "0.8.3",
     "@atomist/slack-messages": "0.12.1",
     "@awaitjs/express": "0.1.4",
+    "body-parser": "1.18.3",
     "chalk": "2.4.1",
     "cheerio": "1.0.0-rc.2",
     "cors": "2.8.4",

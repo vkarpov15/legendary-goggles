@@ -64,5 +64,6 @@ typings/
 ssh
 ssh-*
 copy-*
+deploy-*
 
 bin/
