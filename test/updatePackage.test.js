@@ -3,12 +3,7 @@
 const Library = require('../lib');
 const assert = require('assert');
 const http = require('../lib/util/get');
-const logger = require('../lib/logger');
 const sinon = require('sinon');
-
-if (!process.env.D) {
-  logger.transports = [];
-}
 
 describe('updatePackage', function() {
   let lib;
