@@ -61,7 +61,7 @@ describe('registerSlackOauth', function() {
     await lib.db.model('Customer').create({
       slackId: 'testUserId',
       accountIds: [oid]
-    })
+    });
 
     const res = await lib.registerSlackOauth({ code: 'testcode' });
 
