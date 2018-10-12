@@ -4,7 +4,7 @@ const assert = require('assert');
 const sinon = require('sinon');
 const slack = require('slack');
 
-describe('registerSlackOauth', function() {
+describe('slackOauth', function() {
   let lib;
 
   before(async function() {
@@ -40,7 +40,7 @@ describe('registerSlackOauth', function() {
   });
 
   it('successfully creates a new user', async function() {
-    const res = await lib.registerSlackOauth({ code: 'testcode' });
+    const res = await lib.slackOauth({ code: 'testcode' });
 
     assert.equal(slack.oauth.access.getCalls().length, 1);
     assert.equal(slack.oauth.access.getCalls()[0].args[0].code, 'testcode');
@@ -63,7 +63,7 @@ describe('registerSlackOauth', function() {
       accountIds: [oid]
     });
 
-    const res = await lib.registerSlackOauth({ code: 'testcode' });
+    const res = await lib.slackOauth({ code: 'testcode' });
 
     assert.equal(slack.oauth.access.getCalls().length, 1);
     assert.equal(slack.oauth.access.getCalls()[0].args[0].code, 'testcode');

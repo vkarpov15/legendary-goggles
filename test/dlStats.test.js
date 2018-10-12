@@ -9,7 +9,7 @@ describe('dlStats', function() {
       '2018-09-25:2018-09-26/mongoose';
     const stub = sinon.stub(http, 'get');
 
-    stub.withArgs(expectedUrl).returns({
+    stub.withArgs(expectedUrl).resolves({
       start: '2018-09-25',
       end: '2018-09-26',
       package: 'mongoose',
@@ -20,7 +20,7 @@ describe('dlStats', function() {
     });
     stub.rejects('should not be called');
 
-    const { downloads } = await dlStats('mongoose', '20180925');
+    const { downloads } = await dlStats('mongoose', '20180925', '20180926');
     assert.strictEqual(downloads, 9001);
   });
 
