@@ -1,6 +1,5 @@
 module.exports = {
   entry: {
-    feed: './lib/lambda/feed.js',
     latestVersions: './lib/lambda/latestVersions.js',
     version: './lib/lambda/version.js'
   },
