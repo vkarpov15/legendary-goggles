@@ -79,4 +79,31 @@ describe('slackOauth', function() {
     assert.deepEqual(customer.accountIds.map(id => id.toString()).sort(),
       [oid, res.account._id].map(id => id.toString()).sort());
   });
+
+  it('handles login', async function() {
+    slack.oauth.access.restore();
+    sinon.stub(slack.oauth, 'access').returns({
+      ok: true,
+      scope: 'identify,incoming-webhook,chat:write:bot',
+      user: {
+        name: 'Valeri Karpov',
+        id: 'fooid',
+        email: 'val@karpov.io'
+      }
+    });
+
+    const res = await lib.slackOauth({ code: 'testcode' });
+
+    assert.equal(slack.oauth.access.getCalls().length, 1);
+    assert.equal(slack.oauth.access.getCalls()[0].args[0].code, 'testcode');
+
+    assert.ok(!res.account);
+    assert.ok(res.customer);
+
+    const customer = await lib.db.model('Customer').findById(res.customer._id);
+    assert.ok(customer);
+    assert.equal(customer.email, 'val@karpov.io');
+    assert.equal(customer.slackId, 'fooid');
+    assert.deepEqual(customer.toObject().accountIds, []);
+  });
 });
