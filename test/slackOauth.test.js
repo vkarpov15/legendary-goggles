@@ -84,6 +84,7 @@ describe('slackOauth', function() {
     slack.oauth.access.restore();
     sinon.stub(slack.oauth, 'access').returns({
       ok: true,
+      access_token: 'testtoken123',
       scope: 'identify,incoming-webhook,chat:write:bot',
       user: {
         name: 'Valeri Karpov',
@@ -105,5 +106,9 @@ describe('slackOauth', function() {
     assert.equal(customer.email, 'val@karpov.io');
     assert.equal(customer.slackId, 'fooid');
     assert.deepEqual(customer.toObject().accountIds, []);
+
+    const token = await lib.db.model('Token').findOne({ _id: 'testtoken123' });
+    assert.ok(token);
+    assert.equal(token.customerId.toHexString(), customer._id.toHexString());
   });
 });
