@@ -23,8 +23,14 @@ async function run() {
   while (true) {
     console.log(ts(), `Start loop at ${state.lastSequenceNumber}`);
     const start = Date.now();
-    const { updated } =
-      await findUpdates(state.lastSequenceNumber);
+    const { updated } = await findUpdates(state.lastSequenceNumber).
+      catch(() => ({}));
+
+    if (updated == null) {
+      console.log(ts(), `findUpdates failed, retrying`);
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      continue;
+    }
 
     for (const item of updated) {
       const { seq, id } = item;
