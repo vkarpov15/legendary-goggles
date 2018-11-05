@@ -50,20 +50,25 @@ async function run() {
 
     console.log(ts(), `Done with this loop, elapsed ${Date.now() - start}ms.`);
 
-    const lastSeqNumUrl = 'https://replicate.npmjs.com/registry/_changes?' +
-      'descending=true&limit=1';
-    const latestReleaseSeq = await get(lastSeqNumUrl).then(res => res['last_seq']);
+    // Failing to get the last seqnum shouldn't hold up the process
+    try {
+      const lastSeqNumUrl = 'https://replicate.npmjs.com/registry/_changes?' +
+        'descending=true&limit=1';
+      const latestReleaseSeq = await get(lastSeqNumUrl).then(res => res['last_seq']);
 
-    if (latestReleaseSeq - state.lastSequenceNumber > 100) {
-      loopDelay = 5000;
-    } else if (updated.length === 0) {
-      loopDelay += 20000;
-    } else {
-      loopDelay = 20000;
+      if (latestReleaseSeq - state.lastSequenceNumber > 100) {
+        loopDelay = 5000;
+      } else if (updated.length === 0) {
+        loopDelay += 20000;
+      } else {
+        loopDelay = 20000;
+      }
+
+      console.log(ts(), `We're behind by ${latestReleaseSeq - state.lastSequenceNumber}` +
+        ` (${latestReleaseSeq}) releases, sleep for ${loopDelay} ms`);
+    } catch (err) {
+      console.log(ts(), `Error getting last seqnum: ${err.stack}`);
     }
-
-    console.log(ts(), `We're behind by ${latestReleaseSeq - state.lastSequenceNumber}` +
-      ` (${latestReleaseSeq}) releases, sleep for ${loopDelay} ms`);
 
     await new Promise(resolve => setTimeout(resolve, loopDelay));
   }
