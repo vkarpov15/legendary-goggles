@@ -27,7 +27,7 @@ async function run() {
       catch(() => ({}));
 
     if (updated == null) {
-      console.log(ts(), `findUpdates failed, retrying`);
+      console.log(ts(), 'findUpdates failed, retrying');
       await new Promise(resolve => setTimeout(resolve, 5000));
       continue;
     }
