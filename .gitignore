@@ -67,3 +67,6 @@ copy-*
 deploy-*
 
 bin/
+
+config/prod*
+config/dev*

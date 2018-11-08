@@ -1,4 +1,4 @@
-const config = require('./.config');
+const config = require('./config');
 const { get } = require('./lib/util/get');
 const lib = require('./lib');
 const ts = require('./lib/util/ts');
