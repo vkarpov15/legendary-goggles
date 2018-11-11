@@ -10,6 +10,7 @@ async function run() {
     db,
     findUpdates,
     postToSlack,
+    postToTwitter,
     updatePackage
   } = await lib(config);
 
@@ -43,6 +44,10 @@ async function run() {
 
       if (pkg != null) {
         await postToSlack(pkg, newVersions);
+
+        if (pkg.downloadsLastMonth > 1e6) {
+          await postToTwitter(pkg, newVersions);
+        }
       }
 
       await new Promise(resolve => setTimeout(resolve, 2000));
