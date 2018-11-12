@@ -4,7 +4,7 @@ const config = {};
 
 try {
   require('./production');
-} catch(err) {}
+} catch (err) {} /* eslint no-empty:0 */
 
 const env = process.env.NODE_ENV || 'development';
 Object.assign(config, require(`./${env}`));
