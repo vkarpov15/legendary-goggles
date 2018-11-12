@@ -46,7 +46,7 @@ async function run() {
         await postToSlack(pkg, newVersions);
 
         if (pkg.downloadsLastMonth > 1e6) {
-          await postToTwitter(pkg, newVersions);
+          await postToTwitter({ pkg, newVersions });
         }
       }
 
