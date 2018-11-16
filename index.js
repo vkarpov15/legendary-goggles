@@ -8,6 +8,7 @@ run().catch(error => console.error(error.stack));
 async function run() {
   const {
     db,
+    dlStats,
     findUpdates,
     postToSlack,
     postToTwitter,
@@ -81,7 +82,7 @@ async function run() {
       limit(50);
 
     for (const pkg of _pkgs) {
-      const { downloads } = await lib.dlStats(pkg._id, '20181001', '20181031');
+      const { downloads } = await dlStats(pkg._id, '20181001', '20181031');
       pkg.downloadsLastMonth = downloads;
       pkg.downloadsMonth = '201810';
       console.log(`${ts()} ${pkg._id} ${downloads}`);
