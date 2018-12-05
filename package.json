@@ -32,8 +32,8 @@
     "webpack-cli": "3.1.1"
   },
   "scripts": {
-    "compile-api": "pkg ./api.js --output ./bin/jsreport-api",
-    "compile": "pkg ./index.js --output ./bin/jsreport-ingest",
+    "compile-api": "pkg ./api.js --output ./bin/jsreport-api --public",
+    "compile": "pkg ./index.js --output ./bin/jsreport-ingest --public",
     "lambda": "webpack && node ./zip",
     "lint": "eslint .",
     "test": "env NODE_ENV=test mocha ./test/*.test.js ./test/**/*.test.js"
