@@ -5,7 +5,7 @@ const semver = require('semver');
 run().catch(error => console.error(error.stack));
 
 async function run() {
-  const lib = await require('./lib')(require('./config'));
+  const lib = await require('../lib')(require('../config'));
   const db = lib.db;
 
   const lastFriday = moment().subtract(7, 'days').startOf('day').toDate();
