@@ -1,3 +1,7 @@
+0.2.2 / 2018-12-06
+==================
+ * chore: download stats for November 2018
+
 0.2.1 / 2018-12-05
 ==================
  * fix(postToTwitter): fix crash
