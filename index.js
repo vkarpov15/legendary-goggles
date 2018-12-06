@@ -78,13 +78,13 @@ async function run() {
 
     // Update download counts
     const _pkgs = await db.model('Package').
-      find({ downloadsMonth: { $ne: '201810' } }).
+      find({ downloadsMonth: { $ne: '201811' } }).
       limit(50);
 
     for (const pkg of _pkgs) {
-      const { downloads } = await dlStats(pkg._id, '20181001', '20181031');
+      const { downloads } = await dlStats(pkg._id, '20181101', '20181130');
       pkg.downloadsLastMonth = downloads;
-      pkg.downloadsMonth = '201810';
+      pkg.downloadsMonth = '201811';
       console.log(`${ts()} ${pkg._id} ${downloads}`);
       await pkg.save();
       await new Promise(resolve => setTimeout(resolve, 200));
