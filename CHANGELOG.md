@@ -1,3 +1,7 @@
+0.2.4 / 2018-12-06
+==================
+ * fix: use querystring instead of url params to avoid issues with slashes
+
 0.2.3 / 2018-12-06
 ==================
  * feat: add `package` property to `getVersion()`
