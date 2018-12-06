@@ -1,3 +1,8 @@
+0.2.3 / 2018-12-06
+==================
+ * feat: add `package` property to `getVersion()`
+ * refactor: make `getVersion()` a normal function rather than lambda
+
 0.2.2 / 2018-12-06
 ==================
  * chore: download stats for November 2018
