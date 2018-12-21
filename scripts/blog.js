@@ -98,21 +98,21 @@ async function run() {
   }
 
   top10major.reverse().forEach((o, i) => {
-    const str = `${i + 1}) **[${o.pkg._id}](https://npmjs.com/package/${o.pkg._id})@${o.version.version}**: ${o.pkg.description}`;
+    const str = `${i + 1}) **[${o.pkg._id}](https://npmjs.com/package/${o.pkg._id})@${o.version.version}**: ${o.pkg.description}\n`;
     console.log(str);
   });
 
   console.log('\n\n');
 
   top10minor.reverse().forEach((o, i) => {
-    const str = `${i + 1}) **[${o.pkg._id}](https://npmjs.com/package/${o.pkg._id})@${o.version.version}**: ${o.pkg.description}`;
+    const str = `${i + 1}) **[${o.pkg._id}](https://npmjs.com/package/${o.pkg._id})@${o.version.version}**: ${o.pkg.description}\n`;
     console.log(str);
   });
 
   console.log('\n\n');
 
   top10patch.reverse().forEach((o, i) => {
-    const str = `${i + 1}) **[${o.pkg._id}](https://npmjs.com/package/${o.pkg._id})@${o.version.version}**: ${o.pkg.description}`;
+    const str = `${i + 1}) **[${o.pkg._id}](https://npmjs.com/package/${o.pkg._id})@${o.version.version}**: ${o.pkg.description}\n`;
     console.log(str);
   });
 }
