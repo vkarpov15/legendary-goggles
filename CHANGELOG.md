@@ -1,3 +1,7 @@
+0.2.5 / 2019-01-03
+==================
+ * fix: dont crash if `npmData.time` doesn't exist
+
 0.2.4 / 2018-12-06
 ==================
  * fix: use querystring instead of url params to avoid issues with slashes
