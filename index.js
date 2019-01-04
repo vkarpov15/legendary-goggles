@@ -51,7 +51,7 @@ async function run() {
         }
       }
 
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise(resolve => setTimeout(resolve, 1000));
     }
 
     console.log(ts(), `Done with this loop, elapsed ${Date.now() - start}ms.`);
@@ -63,7 +63,7 @@ async function run() {
       const latestReleaseSeq = await get(lastSeqNumUrl).then(res => res['last_seq']);
 
       if (latestReleaseSeq - state.lastSequenceNumber > 100) {
-        loopDelay = 5000;
+        loopDelay = 1000;
       } else if (updated.length === 0) {
         loopDelay += 20000;
       } else {
