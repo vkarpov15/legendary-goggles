@@ -12,13 +12,6 @@ async function run() {
   const today = moment().startOf('day').toDate();
 
   const pkgs = await db.model('Package').find({ downloadsLastMonth: { $gte: 400000 } });
-  const c = db.model('Version').
-    find({
-      publishedAt: { $gte: lastFriday, $lte: today },
-      downloadsLastMonth: { $gte: 50000 }
-    }).
-    populate('package').
-    cursor();
 
   let top10major = [];
   let top10minor = [];
@@ -35,7 +28,7 @@ async function run() {
       continue;
     }
     // Avoid nightly pre-releases and other junk
-    let version = versions.find(v => !semver.prerelease(v.version));
+    const version = versions.find(v => !semver.prerelease(v.version));
     if (!version) {
       continue;
     }
