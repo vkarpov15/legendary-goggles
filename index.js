@@ -8,7 +8,6 @@ run().catch(error => console.error(error.stack));
 async function run() {
   const {
     db,
-    dlStats,
     findUpdates,
     postToSlack,
     postToTwitter,
@@ -74,20 +73,6 @@ async function run() {
         ` (${latestReleaseSeq}) releases, sleep for ${loopDelay} ms`);
     } catch (err) {
       console.log(ts(), `Error getting last seqnum: ${err.stack}`);
-    }
-
-    // Update download counts
-    const _pkgs = await db.model('Package').
-      find({ downloadsMonth: { $ne: '201812' } }).
-      limit(50);
-
-    for (const pkg of _pkgs) {
-      const { downloads } = await dlStats(pkg._id, '20181201', '20181231');
-      pkg.downloadsLastMonth = downloads;
-      pkg.downloadsMonth = '201812';
-      console.log(`${ts()} ${pkg._id} ${downloads}`);
-      await pkg.save();
-      await new Promise(resolve => setTimeout(resolve, 200));
     }
 
     await new Promise(resolve => setTimeout(resolve, loopDelay));
