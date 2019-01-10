@@ -35,7 +35,13 @@ async function run() {
 
     for (const item of updated) {
       const { seq, id } = item;
-      console.log(ts(), `Update package "${id}"`);
+
+      await db.model('SequenceNumber').create({
+        _id: seq,
+        packageId: id
+      });
+
+      console.log(ts(), `Update package "${id}" ${seq}`);
 
       const { pkg, newVersions } = await updatePackage(id);
 
