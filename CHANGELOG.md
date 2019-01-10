@@ -1,3 +1,8 @@
+0.2.6 / 2019-01-10
+==================
+ * feat(workers): add downloads worker to split up work
+ * feat: add random property to version and package for easier splitting
+
 0.2.5 / 2019-01-03
 ==================
  * fix: dont crash if `npmData.time` doesn't exist
