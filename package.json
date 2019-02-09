@@ -34,6 +34,8 @@
   "scripts": {
     "compile-api": "pkg ./api.js --output ./bin/jsreport-api --public",
     "compile-downloads": "pkg ./workers/downloads.js --output ./bin/jsreport-downloads --public",
+    "compile-stars": "pkg ./workers/stars.js --output ./bin/jsreport-stars --public",
+    "compile-versions": "pkg ./workers/versions.js --output ./bin/jsreport-versions --public",
     "compile": "pkg ./index.js --output ./bin/jsreport-ingest --public",
     "lambda": "webpack && node ./zip",
     "lint": "eslint .",

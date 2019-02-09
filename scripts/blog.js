@@ -8,8 +8,8 @@ async function run() {
   const lib = await require('../lib')(require('../config'));
   const db = lib.db;
 
-  const lastFriday = moment().subtract(7, 'days').startOf('day').toDate();
-  const today = moment().startOf('day').toDate();
+  const lastFriday = moment().subtract(8, 'days').startOf('day').toDate();
+  const today = moment().subtract(1, 'days').startOf('day').toDate();
 
   const pkgs = await db.model('Package').find({ downloadsLastMonth: { $gte: 400000 } });
 

@@ -12,17 +12,20 @@ async function run() {
 
   while (true) {
     // Update download counts
-    const _pkgs = await db.model('Package').
-      find({ downloadsMonth: { $ne: '201812' } }).
-      limit(50);
+    const pkg = await db.model('Package').
+      findOneAndUpdate({ downloadsMonth: { $ne: '201901' } }, { downloadsMonth: '201901' }, { new: false });
 
-    for (const pkg of _pkgs) {
-      const { downloads } = await dlStats(pkg._id, '20181201', '20181231');
-      pkg.downloadsLastMonth = downloads;
-      pkg.downloadsMonth = '201812';
-      console.log(`${ts()} ${pkg._id} ${downloads}`);
-      await pkg.save();
-      await new Promise(resolve => setTimeout(resolve, 200));
+    if (pkg == null) {
+      await new Promise(resolve => setTimeout(resolve, 1000 * 60 * 60));
+      continue;
     }
+
+    const { downloads } = await dlStats(pkg._id, '20190101', '20190131');
+    pkg.downloadsLastMonth = downloads;
+    pkg.downloadsMonth = '201901';
+    console.log(`${ts()} ${pkg._id} ${downloads}`);
+    await pkg.save();
+
+    await new Promise(resolve => setTimeout(resolve, 100));
   }
 }

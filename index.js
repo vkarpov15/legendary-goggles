@@ -36,14 +36,24 @@ async function run() {
     for (const item of updated) {
       const { seq, id } = item;
 
+      state.lastSequenceNumber = seq;
+
       await db.model('SequenceNumber').create({
         _id: seq,
         packageId: id
+      }).catch(err => {
+        // Ignore duplicates
+        if (err.code === 11000) {
+          return;
+        }
+        throw err;
       });
+
+      await state.save();
 
       console.log(ts(), `Update package "${id}" ${seq}`);
 
-      const { pkg, newVersions } = await updatePackage(id);
+      /*const { pkg, newVersions } = await updatePackage(id);
 
       state.lastSequenceNumber = seq;
       await state.save();
@@ -56,7 +66,7 @@ async function run() {
         }
       }
 
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 1000));*/
     }
 
     console.log(ts(), `Done with this loop, elapsed ${Date.now() - start}ms.`);
