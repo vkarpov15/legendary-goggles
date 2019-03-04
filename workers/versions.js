@@ -1,6 +1,7 @@
+'use strict';
+
 const config = require('../config');
 const lib = require('../lib');
-const ts = require('../lib/util/ts');
 
 run().catch(error => console.error(error.stack));
 

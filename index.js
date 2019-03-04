@@ -8,10 +8,7 @@ run().catch(error => console.error(error.stack));
 async function run() {
   const {
     db,
-    findUpdates,
-    postToSlack,
-    postToTwitter,
-    updatePackage
+    findUpdates
   } = await lib(config);
 
   const State = db.model('State');
