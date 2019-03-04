@@ -1,3 +1,7 @@
+0.3.0 / 2019-03-04
+==================
+ * feat(api): add github oauth
+
 0.2.6 / 2019-01-10
 ==================
  * feat(workers): add downloads worker to split up work
