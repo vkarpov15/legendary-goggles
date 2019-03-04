@@ -1,3 +1,7 @@
+0.3.1 / 2019-03-04
+==================
+ * feat(api): add ability to load github repos
+
 0.3.0 / 2019-03-04
 ==================
  * feat(api): add github oauth

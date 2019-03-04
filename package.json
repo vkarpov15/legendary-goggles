@@ -1,6 +1,6 @@
 {
   "name": "backend",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "dependencies": {
     "archetype": "0.8.3",
     "@atomist/slack-messages": "0.12.1",
