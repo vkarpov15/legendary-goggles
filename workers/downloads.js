@@ -13,7 +13,7 @@ async function run() {
   while (true) {
     // Update download counts
     const pkg = await db.model('Package').
-      findOneAndUpdate({ downloadsMonth: { $ne: '201901' } }, { downloadsMonth: '201901' }, { new: false });
+      findOneAndUpdate({ downloadsMonth: { $ne: '201902' } }, { downloadsMonth: '201902' }, { new: false });
 
     if (pkg == null) {
       await new Promise(resolve => setTimeout(resolve, 1000 * 60 * 60));
