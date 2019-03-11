@@ -1,3 +1,7 @@
+0.3.2 / 2019-03-11
+==================
+ * feat(api): sync packagesWatched from GitHub
+
 0.3.1 / 2019-03-04
 ==================
  * feat(api): add ability to load github repos
