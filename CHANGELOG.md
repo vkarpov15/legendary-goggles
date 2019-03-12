@@ -1,3 +1,8 @@
+0.3.3 / 2019-03-12
+==================
+ * feat: add weekly digest support
+ * feat(api): add unsubscribe
+
 0.3.2 / 2019-03-11
 ==================
  * feat(api): sync packagesWatched from GitHub
