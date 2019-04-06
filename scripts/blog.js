@@ -9,7 +9,13 @@ async function run() {
   const db = lib.db;
 
   const lastFriday = moment().subtract(7, 'days').startOf('day').toDate();
-  const today = moment().startOf('day').toDate();
+  const today = moment().subtract(0, 'days').startOf('day').toDate();
+
+  const count = await db.model('Version').count({
+    publishedAt: { $gte: lastFriday, $lte: today }
+  });
+
+  console.log('Count', count);
 
   const pkgs = await db.model('Package').find({ downloadsLastMonth: { $gte: 400000 } });
 
@@ -108,4 +114,6 @@ async function run() {
     const str = `${i + 1}) **[${o.pkg._id}](https://npmjs.com/package/${o.pkg._id})@${o.version.version}**: ${o.pkg.description}\n`;
     console.log(str);
   });
+
+  console.log('Count:', count);
 }
